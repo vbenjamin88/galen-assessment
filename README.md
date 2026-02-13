@@ -38,11 +38,17 @@ src/
 
 ### 1. Run with Docker (one command)
 
+**Windows (PowerShell):**
 ```powershell
-# Prerequisites: Docker Desktop installed and running
-
 .\scripts\run-docker.ps1
 ```
+
+**Linux / Mac:**
+```bash
+./scripts/run-docker.sh
+```
+
+*See [docs/DOCKER.md](docs/DOCKER.md) for CI vs local, and Windows vs Linux commands.*
 
 This script starts Azurite, SQL Server, and the Function, initializes the database, uploads `sample-data/sample.csv`, and triggers processing. View logs with `docker compose logs -f functions`.
 
