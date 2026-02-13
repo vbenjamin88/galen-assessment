@@ -50,7 +50,7 @@ public static class RecordValidator
         {
             ExternalId = input.Id!.Trim(),
             PatientIdentifier = input.PatientId!.Trim(),
-            DocumentType = input.DocType?.Trim() ?? "Other",
+            DocumentType = string.IsNullOrWhiteSpace(input.DocType) ? "Other" : input.DocType.Trim(),
             DocumentDate = docDate,
             Description = input.Description?.Trim(),
             SourceSystem = input.SourceSystem?.Trim(),
