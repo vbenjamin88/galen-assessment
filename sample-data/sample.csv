@@ -1,0 +1,8 @@
+id,patient_id,doc_type,doc_date,description,source_system
+EXT-001,PAT-10001,Lab,2024-01-15,CBC Panel,PartnerEMR
+EXT-002,PAT-10002,Radiology,2024-01-16,Chest X-Ray,PartnerEMR
+EXT-003,PAT-10003,Clinical,2024-01-17,Progress Note,PartnerEMR
+EXT-004,PAT-10001,Administrative,2024-01-18,Consent Form,PartnerEMR
+EXT-005,PAT-10004,Lab,,Fasting Glucose,PartnerEMR
+EXT-006,,Radiology,2024-01-19,MRI Brain,PartnerEMR
+EXT-007,PAT-10005,InvalidType,2024-01-20,Note,PartnerEMR

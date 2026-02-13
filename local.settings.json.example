@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "BlobContainerName": "inbound",
+    "RecordRepository__ConnectionString": "Server=localhost;Database=GalenIntegration;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;",
+    "RecordRepository__CommandTimeoutSeconds": "120"
+  }
+}

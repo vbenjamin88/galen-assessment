@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+local.settings.json
+k8s/secret.yaml
+*.errors.json
+*.tar.gz

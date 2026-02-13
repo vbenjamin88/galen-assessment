@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Galen.Integration.Application</RootNamespace>
+    <AssemblyName>Galen.Integration.Application</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Galen.Integration.Domain\Galen.Integration.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

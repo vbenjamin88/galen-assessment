@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: galen-azurite
+    ports:
+      - "10000:10000"  # Blob
+      - "10001:10001"  # Queue
+      - "10002:10002"  # Table
+    volumes:
+      - azurite-data:/data
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.exit(0)"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: galen-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong@Passw0rd"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  functions:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: galen-functions
+    depends_on:
+      azurite:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
+    environment:
+      AzureWebJobsStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+      BlobContainerName: inbound
+      RecordRepository__ConnectionString: "Server=sqlserver;Database=GalenIntegration;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;Encrypt=false;"
+      RecordRepository__CommandTimeoutSeconds: "120"
+    ports:
+      - "7071:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/admin/functions"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  upload-sample:
+    image: mcr.microsoft.com/azure-cli
+    container_name: galen-upload-sample
+    depends_on:
+      azurite:
+        condition: service_healthy
+    environment:
+      AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+    volumes:
+      - ./sample-data:/data
+    profiles:
+      - init
+    command: >
+      sh -c "
+      az storage container create -n inbound --connection-string \"$$AZURE_STORAGE_CONNECTION_STRING\" 2>/dev/null || true &&
+      az storage blob upload -f /data/sample.csv -c inbound -n sample.csv --connection-string \"$$AZURE_STORAGE_CONNECTION_STRING\" --overwrite &&
+      echo 'Sample CSV uploaded - Function will process it'
+      "
+
+volumes:
+  azurite-data:
+  sql-data:
